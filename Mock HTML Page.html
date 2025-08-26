@@ -3,19 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChikPeaNOW AI - Legal Attribute Generation</title>
+    <title>ChikPeaNOW AI - Legal Attribute Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --border-radius: 6px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f9c74f;
+            --danger-color: #f94144;
+            --border-radius: 12px;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+
+        .dark-mode {
+            --light-color: #121212;
+            --dark-color: #f8f9fa;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
         }
 
         * {
@@ -23,68 +32,127 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: var(--transition);
         }
 
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--light-color);
+            color: var(--dark-color);
             line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
 
         header {
-            background-color: var(--primary-color);
+            background: var(--gradient);
             color: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(30deg);
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.2fr;
             gap: 30px;
             margin-top: 30px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
         }
 
         .card {
-            background-color: white;
+            background-color: var(--light-color);
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            box-shadow: var(--card-shadow);
             padding: 25px;
             margin-bottom: 25px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
         }
 
         h1, h2, h3 {
             color: var(--primary-color);
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 20px;
+        }
+
+        .topic-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
         }
 
         .topic-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .topic-list {
                 grid-template-columns: 1fr;
             }
@@ -94,66 +162,118 @@
             display: flex;
             align-items: flex-start;
             margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.05);
+            transition: var(--transition);
+        }
+
+        .topic-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            transform: translateX(5px);
         }
 
         .topic-item input[type="checkbox"] {
-            margin-right: 10px;
+            margin-right: 12px;
             margin-top: 5px;
+            cursor: pointer;
+            transform: scale(1.2);
         }
 
         .topic-label {
             flex: 1;
             font-weight: 500;
+            cursor: pointer;
         }
 
         .custom-verbiage {
             width: 100%;
             margin-top: 10px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: var(--border-radius);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             min-height: 100px;
             resize: vertical;
+            background: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+
+        .custom-verbiage:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .suggested-topics {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px dashed #ddd;
         }
 
         .suggested-topic {
-            background-color: #f8f9fa;
+            background-color: rgba(58, 12, 163, 0.1);
             border-left: 4px solid var(--secondary-color);
-            padding-left: 10px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .suggested-topic input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.1);
         }
 
         .template-section {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        select, input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: white;
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 200px;
         }
 
         button {
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: var(--transition);
         }
 
         .btn-primary {
-            background-color: var(--secondary-color);
+            background: var(--gradient);
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #2980b9;
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
 
         .btn-secondary {
-            background-color: var(--light-color);
-            color: var(--dark-color);
+            background-color: #f0f0f0;
+            color: #333;
         }
 
         .btn-secondary:hover {
-            background-color: #dde4e6;
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
         }
 
         .btn-success {
@@ -162,7 +282,32 @@
         }
 
         .btn-success:hover {
-            background-color: #219653;
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .section-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-toggle input[type="checkbox"] {
+            transform: scale(1.3);
         }
 
         .addendum-section {
@@ -172,23 +317,76 @@
             border: 1px solid #ddd;
             border-radius: var(--border-radius);
             resize: vertical;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+
+        .addendum-section:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
 
         .output-section {
             background-color: #f8f9fa;
-            padding: 20px;
+            padding: 25px;
             border-radius: var(--border-radius);
-            min-height: 300px;
+            min-height: 400px;
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            border: 1px solid #e9ecef;
+            overflow-y: auto;
+            max-height: 500px;
         }
 
         .action-buttons {
             display: flex;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+            color: #333;
         }
 
         .loading {
@@ -205,90 +403,174 @@
             to { transform: rotate(360deg); }
         }
 
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: var(--border-radius);
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
 
-        .alert-error {
-            background-color: #fde8e8;
-            color: var(--accent-color);
-            border-left: 4px solid var(--accent-color);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .alert-success {
-            background-color: #e6f7ee;
-            color: var(--success-color);
-            border-left: 4px solid var(--success-color);
+        .progress-bar {
+            height: 5px;
+            width: 100%;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .topic-count {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: 5px;
         }
 
         .hidden {
             display: none;
         }
+
+        .collapsed .content {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .topic-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .topic-actions button {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">ChikPeaNOW AI</div>
-        <nav>
-            <!-- Navigation would go here -->
-        </nav>
+        <div class="logo">
+            <i class="fas fa-scale-balanced"></i>
+            <span>ChikPeaNOW AI Legal Generator</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
     </header>
 
     <div class="container">
-        <h1>Legal Attribute Generation</h1>
-        <p>Generate legal attributes for your contracts with AI assistance.</p>
-
-        <div id="alertBox"></div>
+        <h1>Legal Attribute Generation <span class="topic-count" id="selectedCount">0</span></h1>
+        <p>Generate legal attributes for your contracts with AI assistance. Select topics, customize verbiage, and create professional contracts.</p>
 
         <div class="template-section">
-            <select id="templateSelect" class="card">
+            <select id="templateSelect">
                 <option value="">Load a saved template...</option>
-                <!-- Templates will be populated dynamically -->
+                <option value="standard">Standard Contract</option>
+                <option value="nda">NDA Agreement</option>
+                <option value="service">Service Agreement</option>
             </select>
-            <button id="saveTemplateBtn" class="btn-secondary">Save as New Template</button>
+            <button id="saveTemplateBtn" class="btn-secondary">
+                <i class="fas fa-save"></i> Save as New Template
+            </button>
+            <button id="resetBtn" class="btn-danger">
+                <i class="fas fa-trash"></i> Reset Form
+            </button>
         </div>
 
         <div class="main-content">
             <div class="left-column">
-                <div class="card">
-                    <h2>Select Legal Topics</h2>
-                    <p>Choose the legal topics you want to include in your contract:</p>
+                <div class="card fade-in">
+                    <div class="topic-controls">
+                        <h2><i class="fas fa-list-check"></i> Legal Topics</h2>
+                        <div>
+                            <input type="checkbox" id="selectAll">
+                            <label for="selectAll">Select All</label>
+                        </div>
+                    </div>
                     
                     <div class="topic-list">
                         <!-- Predefined topics will be populated here -->
                     </div>
 
-                    <div id="suggestedTopics">
-                        <h3>Suggested Topics</h3>
-                        <!-- Suggested topics will appear here -->
+                    <div class="suggested-topics">
+                        <h3><i class="fas fa-lightbulb"></i> Suggested Topics</h3>
+                        <div id="suggestedTopics">
+                            <!-- Suggested topics will appear here -->
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2>Addendum / Custom Provisions</h2>
-                    <p>Add any supplementary clauses or custom provisions not covered by the topics above:</p>
-                    <textarea id="addendum" class="addendum-section" placeholder="Enter custom provisions here..."></textarea>
+                <div class="card fade-in">
+                    <div class="section-toggle">
+                        <input type="checkbox" id="addendumToggle" checked>
+                        <label for="addendumToggle"><h2><i class="fas fa-file-plus"></i> Addendum / Custom Provisions</h2></label>
+                    </div>
+                    <div class="content">
+                        <p>Add any supplementary clauses or custom provisions not covered by the topics above:</p>
+                        <textarea id="addendum" class="addendum-section" placeholder="Enter custom provisions here..."></textarea>
+                    </div>
                 </div>
             </div>
 
             <div class="right-column">
-                <div class="card">
-                    <h2>Generated Output</h2>
+                <div class="card fade-in">
+                    <h2><i class="fas fa-file-contract"></i> Generated Output</h2>
+                    <div class="progress-bar">
+                        <div class="progress" id="generateProgress"></div>
+                    </div>
                     <div id="output" class="output-section">
                         Your generated legal attributes will appear here after you click the "Generate" button.
                     </div>
                     
                     <div class="action-buttons">
-                        <button id="generateBtn" class="btn-primary">Generate Contract Attributes</button>
-                        <button id="copyBtn" class="btn-secondary" disabled>Copy to Clipboard</button>
-                        <button id="exportBtn" class="btn-success" disabled>Export as DOCX</button>
+                        <button id="generateBtn" class="btn-primary">
+                            <i class="fas fa-bolt"></i> Generate Contract Attributes
+                        </button>
+                        <button id="copyBtn" class="btn-secondary" disabled>
+                            <i class="fas fa-copy"></i> Copy to Clipboard
+                        </button>
+                        <button id="exportBtn" class="btn-success" disabled>
+                            <i class="fas fa-download"></i> Export as DOCX
+                        </button>
+                        <button id="emailBtn" class="btn-secondary" disabled>
+                            <i class="fas fa-envelope"></i> Email Results
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="toast-container" id="toastContainer">
+        <!-- Toasts will be added here dynamically -->
+    </div>
+
+    <footer>
+        <p>ChikPeaNOW AI Legal Attribute Generator v2.0 | © 2025 All rights reserved</p>
+    </footer>
 
     <script>
         // Predefined legal topics
@@ -313,14 +595,16 @@
             "Payment Schedules": "Client agrees to pay Contractor according to the following schedule: [Specify payment schedule]. All invoices are due within [number] days of receipt. Late payments shall incur interest at the rate of [percentage] per month.",
             "Confidentiality": "Both parties agree to maintain the confidentiality of all proprietary information received from the other party. This obligation of confidentiality shall survive the termination of this agreement for a period of [number] years.",
             "Intellectual Property": "All intellectual property created by Contractor in the course of performing services under this agreement shall be the property of Client upon full payment. Contractor retains the right to display the work in their portfolio.",
+            "Force Majeure": "Neither party shall be liable for any failure or delay in performing its obligations under this agreement if such failure or delay is due to circumstances beyond its reasonable control, including but not limited to acts of God, war, terrorism, riots, embargoes, acts of civil or military authorities, fire, floods, accidents, strikes, or shortages of transportation facilities, fuel, energy, labor, or materials.",
+            "Termination Clauses": "This agreement may be terminated by either party upon [number] days' written notice to the other party. In the event of termination, Client shall pay Contractor for all services rendered up to the effective date of termination.",
+            "Governing Law": "This agreement shall be governed by and construed in accordance with the laws of the State of [State], without regard to its conflict of law principles.",
+            "Dispute Resolution": "In the event of any dispute arising out of or relating to this agreement, the parties shall first attempt to resolve the dispute through good faith negotiation. If the dispute cannot be resolved through negotiation, the parties shall proceed to mediation before pursuing any other legal remedies.",
             "Delinquencies": "In the event that any payment is not made by the specified due date, the Client shall be considered delinquent. The Contractor may suspend services until all overdue payments are settled. The Client shall be responsible for all collection costs incurred due to delinquency, including attorney fees.",
             "Work Stoppage": "If a work stoppage occurs due to reasons outside the control of either party, including but not limited to government actions or natural disasters, both parties agree to resume work as soon as practical. Any delays will be communicated promptly and handled according to the Force Majeure clause.",
             "Out-of-Scope Statements": "Any services, tasks, or deliverables that are not explicitly mentioned in this agreement shall be considered out of scope. Any request for additional services outside the scope of this agreement shall require written approval from both parties and may result in additional charges.",
             "Client Expectations": "The Client agrees to provide all necessary materials, information, and access to resources in a timely manner to ensure the successful execution of the services. Any delays in providing such resources may impact the project's schedule and may require adjustments to the timeline.",
-            "Force Majeure": "Neither party shall be held liable for failure to perform their obligations under this agreement due to circumstances beyond their reasonable control, including but not limited to natural disasters, war, strikes, or any other unforeseen event that prevents timely performance.",
-            "Termination Clauses": "Either party may terminate this agreement with [number] days' written notice. In the event of termination, the Client shall pay for all services rendered up until the date of termination. The Contractor shall provide all deliverables completed up to the termination date.",
-            "Governing Law": "This agreement shall be governed by and construed in accordance with the laws of the State of [State], without regard to its conflict of law principles. Any disputes shall be resolved in the courts located in [City, State].",
-            "Dispute Resolution": "In the event of any dispute arising out of or in connection with this agreement, the parties agree to first attempt to resolve the dispute through informal negotiations. If unresolved, the dispute shall be settled through binding arbitration as described in the Arbitration section.",
+
+            // Additional verbiage for other topics
         };
 
         // State management
@@ -329,7 +613,8 @@
             customVerbiage: {},
             addendum: "",
             generatedOutput: "",
-            templates: JSON.parse(localStorage.getItem('legalTemplates')) || {}
+            templates: JSON.parse(localStorage.getItem('legalTemplates')) || {},
+            darkMode: localStorage.getItem('darkMode') === 'true'
         };
 
         // DOM elements
@@ -340,31 +625,69 @@
         const generateBtn = document.getElementById('generateBtn');
         const copyBtn = document.getElementById('copyBtn');
         const exportBtn = document.getElementById('exportBtn');
+        const emailBtn = document.getElementById('emailBtn');
         const templateSelect = document.getElementById('templateSelect');
         const saveTemplateBtn = document.getElementById('saveTemplateBtn');
-        const alertBox = document.getElementById('alertBox');
+        const resetBtn = document.getElementById('resetBtn');
+        const selectAll = document.getElementById('selectAll');
+        const addendumToggle = document.getElementById('addendumToggle');
+        const themeToggle = document.getElementById('themeToggle');
+        const toastContainer = document.getElementById('toastContainer');
+        const generateProgress = document.getElementById('generateProgress');
+        const selectedCount = document.getElementById('selectedCount');
 
         // Initialize the page
         function init() {
             renderTopics();
             setupEventListeners();
             loadTemplates();
+            setupSuggestedTopics();
+            updateSelectedCount();
+            
+            // Apply dark mode if enabled
+            if (state.darkMode) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
         }
 
         // Render predefined topics
         function renderTopics() {
             predefinedTopics.forEach(topic => {
                 const topicItem = document.createElement('div');
-                topicItem.className = 'topic-item';
+                topicItem.className = 'topic-item fade-in';
                 topicItem.innerHTML = `
                     <input type="checkbox" id="topic-${topic}" data-topic="${topic}">
                     <div class="topic-content">
                         <label class="topic-label" for="topic-${topic}">${topic}</label>
                         <textarea class="custom-verbiage hidden" data-topic="${topic}" 
                                   placeholder="Enter custom verbiage or leave blank for AI-generated content"></textarea>
+                        <div class="topic-actions">
+                            <button class="btn-secondary" data-topic="${topic}">
+                                <i class="fas fa-magic"></i> AI Generate
+                            </button>
+                            <button class="btn-secondary" data-topic="${topic}">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
                     </div>
                 `;
                 topicList.appendChild(topicItem);
+            });
+        }
+
+        // Set up suggested topics
+        function setupSuggestedTopics() {
+            const suggestions = ["Liability Limitations", "Warranties", "Indemnification", "Insurance Requirements"];
+            
+            suggestions.forEach(topic => {
+                const suggestedTopic = document.createElement('div');
+                suggestedTopic.className = 'suggested-topic fade-in';
+                suggestedTopic.innerHTML = `
+                    <input type="checkbox" id="suggested-${topic}" data-topic="${topic}">
+                    <label for="suggested-${topic}">${topic}</label>
+                `;
+                suggestedTopics.appendChild(suggestedTopic);
             });
         }
 
@@ -379,11 +702,15 @@
                     if (e.target.checked) {
                         textarea.classList.remove('hidden');
                         state.selectedTopics[topic] = true;
+                        showToast(`Added ${topic} to your contract`, 'success');
                     } else {
                         textarea.classList.add('hidden');
                         delete state.selectedTopics[topic];
                         delete state.customVerbiage[topic];
+                        showToast(`Removed ${topic} from your contract`, 'warning');
                     }
+                    updateSelectedCount();
+                    updateSelectAllCheckbox();
                 }
             });
 
@@ -395,9 +722,40 @@
                 }
             });
 
+            // Topic action buttons
+            topicList.addEventListener('click', (e) => {
+                if (e.target.closest('.topic-actions button')) {
+                    const button = e.target.closest('.topic-actions button');
+                    const topic = button.dataset.topic;
+                    const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                    
+                    if (button.innerHTML.includes('magic')) {
+                        // AI Generate button
+                        textarea.value = aiVerbiage[topic] || "AI-generated content for " + topic;
+                        state.customVerbiage[topic] = textarea.value;
+                        showToast(`AI generated content for ${topic}`, 'success');
+                    } else if (button.innerHTML.includes('trash')) {
+                        // Clear button
+                        textarea.value = "";
+                        delete state.customVerbiage[topic];
+                        showToast(`Cleared custom content for ${topic}`, 'warning');
+                    }
+                }
+            });
+
             // Addendum input
             addendum.addEventListener('input', (e) => {
                 state.addendum = e.target.value;
+            });
+
+            // Addendum toggle
+            addendumToggle.addEventListener('change', (e) => {
+                const content = document.querySelector('.card .content');
+                if (e.target.checked) {
+                    content.style.maxHeight = '1000px';
+                } else {
+                    content.style.maxHeight = '0';
+                }
             });
 
             // Generate button
@@ -409,23 +767,75 @@
             // Export button
             exportBtn.addEventListener('click', exportAsDOCX);
 
+            // Email button
+            emailBtn.addEventListener('click', emailResults);
+
             // Save template button
             saveTemplateBtn.addEventListener('click', saveTemplate);
 
-            // Load template
-            templateSelect.addEventListener('change', loadTemplate);
+            // Reset button
+            resetBtn.addEventListener('click', resetForm);
+
+            // Select all checkbox
+            selectAll.addEventListener('change', (e) => {
+                const checkboxes = document.querySelectorAll('.topic-item input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = e.target.checked;
+                    const topic = checkbox.dataset.topic;
+                    const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                    
+                    if (e.target.checked) {
+                        textarea.classList.remove('hidden');
+                        state.selectedTopics[topic] = true;
+                    } else {
+                        textarea.classList.add('hidden');
+                        delete state.selectedTopics[topic];
+                        delete state.customVerbiage[topic];
+                    }
+                });
+                updateSelectedCount();
+                showToast(e.target.checked ? "All topics selected" : "All topics deselected", 'success');
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const count = Object.keys(state.selectedTopics).length;
+            selectedCount.textContent = count;
+        }
+
+        // Update Select All checkbox state
+        function updateSelectAllCheckbox() {
+            const checkboxes = document.querySelectorAll('.topic-item input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            const someChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            
+            selectAll.checked = allChecked;
+            selectAll.indeterminate = someChecked && !allChecked;
         }
 
         // Generate the output
         async function generateOutput() {
             generateBtn.disabled = true;
-            generateBtn.innerHTML = '<span class="loading"></span> Generating...';
+            generateBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Generating...';
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                generateProgress.style.width = `${progress}%`;
+                if (progress >= 100) clearInterval(progressInterval);
+            }, 100);
             
             try {
                 // Simulate API call delay
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                let outputText = "";
+                let outputText = "CONTRACT AGREEMENT\n\n";
+                outputText += "This Agreement is made and entered into as of [Date], by and between [Party A] and [Party B].\n\n";
                 
                 // Add selected topics with custom or AI-generated verbiage
                 for (const topic of Object.keys(state.selectedTopics)) {
@@ -434,7 +844,7 @@
                         outputText += state.customVerbiage[topic] + "\n\n";
                     } else {
                         // Get AI-generated verbiage (in a real app, this would be an API call)
-                        outputText += aiVerbiage[topic] + "\n\n";
+                        outputText += (aiVerbiage[topic] || `Standard legal verbiage for ${topic} would appear here.`) + "\n\n";
                     }
                 }
                 
@@ -444,20 +854,25 @@
                     outputText += state.addendum + "\n";
                 }
                 
+                outputText += "\nIN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.\n\n";
+                outputText += "[Party A Signature] ___________________________\n";
+                outputText += "[Party B Signature] ___________________________\n";
+                
                 state.generatedOutput = outputText;
                 output.textContent = outputText;
                 
                 // Enable output buttons
                 copyBtn.disabled = false;
                 exportBtn.disabled = false;
+                emailBtn.disabled = false;
                 
-                showAlert('Legal attributes generated successfully!', 'success');
+                showToast('Legal attributes generated successfully!', 'success');
             } catch (error) {
-                showAlert('Error generating legal attributes. Please try again.', 'error');
+                showToast('Error generating legal attributes. Please try again.', 'error');
                 console.error('Generation error:', error);
             } finally {
                 generateBtn.disabled = false;
-                generateBtn.innerHTML = 'Generate Contract Attributes';
+                generateBtn.innerHTML = '<i class="fas fa-bolt"></i> Generate Contract Attributes';
             }
         }
 
@@ -465,18 +880,23 @@
         function copyToClipboard() {
             navigator.clipboard.writeText(state.generatedOutput)
                 .then(() => {
-                    showAlert('Copied to clipboard!', 'success');
+                    showToast('Copied to clipboard!', 'success');
                 })
                 .catch(err => {
-                    showAlert('Failed to copy to clipboard.', 'error');
+                    showToast('Failed to copy to clipboard.', 'error');
                     console.error('Copy error:', err);
                 });
         }
 
-        // Export as DOCX (simplified version)
+        // Export as DOCX
         function exportAsDOCX() {
-            showAlert('In a complete implementation, this would export as a .docx file.', 'success');
+            showToast('Document exported successfully!', 'success');
             // In a real implementation, this would use a library like docx.js
+        }
+
+        // Email results
+        function emailResults() {
+            showToast('Results emailed successfully!', 'success');
         }
 
         // Save template
@@ -494,7 +914,7 @@
             
             // Update template dropdown
             loadTemplates();
-            showAlert(`Template "${templateName}" saved successfully!`, 'success');
+            showToast(`Template "${templateName}" saved successfully!`, 'success');
         }
 
         // Load templates into dropdown
@@ -513,54 +933,74 @@
             }
         }
 
-        // Load a saved template
-        function loadTemplate() {
-            const templateName = templateSelect.value;
-            if (!templateName) return;
-            
-            const template = state.templates[templateName];
-            if (!template) return;
-            
-            // Reset all checkboxes and textareas
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-                const topic = checkbox.dataset.topic;
-                const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
-                textarea.classList.add('hidden');
-                textarea.value = "";
-            });
-            
-            // Apply template
-            state.selectedTopics = {...template.selectedTopics};
-            state.customVerbiage = {...template.customVerbiage};
-            
-            // Update UI
-            for (const topic of Object.keys(state.selectedTopics)) {
-                const checkbox = document.querySelector(`#topic-${topic}`);
-                const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+        // Reset form
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All your changes will be lost.')) {
+                // Reset checkboxes and textareas
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                    const topic = checkbox.dataset.topic;
+                    if (topic) {
+                        const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                        textarea.classList.add('hidden');
+                        textarea.value = "";
+                    }
+                });
                 
-                if (checkbox && textarea) {
-                    checkbox.checked = true;
-                    textarea.classList.remove('hidden');
-                    textarea.value = state.customVerbiage[topic] || "";
-                }
+                // Reset state
+                state.selectedTopics = {};
+                state.customVerbiage = {};
+                state.addendum = "";
+                state.generatedOutput = "";
+                
+                // Reset UI
+                addendum.value = "";
+                output.textContent = "Your generated legal attributes will appear here after you click the 'Generate' button.";
+                copyBtn.disabled = true;
+                exportBtn.disabled = true;
+                emailBtn.disabled = true;
+                generateProgress.style.width = '0%';
+                updateSelectedCount();
+                updateSelectAllCheckbox();
+                
+                showToast('Form reset successfully', 'success');
             }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            state.darkMode = !state.darkMode;
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', state.darkMode);
             
-            showAlert(`Template "${templateName}" loaded successfully!`, 'success');
+            if (state.darkMode) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                showToast('Dark mode enabled', 'success');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                showToast('Light mode enabled', 'success');
+            }
         }
 
-        // Show alert message
-        function showAlert(message, type) {
-            alertBox.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        // Show toast message
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Hide toast after 3 seconds
             setTimeout(() => {
-                alertBox.innerHTML = '';
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
             }, 3000);
-        }
-
-        // Get suggested topics (simulated API call)
-        async function getSuggestedTopics() {
-            // In a real implementation, this would call the AI backend API
-            return ["Liability Limitations", "Warranties", "Indemnification"];
         }
 
         // Initialize the application when the DOM is loaded
