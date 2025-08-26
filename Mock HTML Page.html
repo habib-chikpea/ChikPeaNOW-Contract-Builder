@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChikPeaNOW AI - Legal Attribute Generation</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --border-radius: 6px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .topic-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .topic-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .topic-item input[type="checkbox"] {
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+
+        .topic-label {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .custom-verbiage {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .suggested-topic {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 10px;
+        }
+
+        .template-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde4e6;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .addendum-section {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            resize: vertical;
+            font-size: 0.9rem;
+        }
+
+        .output-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            min-height: 300px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .alert-error {
+            background-color: #fde8e8;
+            color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .alert-success {
+            background-color: #e6f7ee;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ChikPeaNOW AI</div>
+        <nav>
+            <!-- Navigation would go here -->
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Legal Attribute Generation</h1>
+        <p>Generate legal attributes for your contracts with AI assistance.</p>
+
+        <div id="alertBox"></div>
+
+        <div class="template-section">
+            <select id="templateSelect" class="card">
+                <option value="">Load a saved template...</option>
+                <!-- Templates will be populated dynamically -->
+            </select>
+            <button id="saveTemplateBtn" class="btn-secondary">Save as New Template</button>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div class="card">
+                    <h2>Select Legal Topics</h2>
+                    <p>Choose the legal topics you want to include in your contract:</p>
+                    
+                    <div class="topic-list">
+                        <!-- Predefined topics will be populated here -->
+                    </div>
+
+                    <div id="suggestedTopics">
+                        <h3>Suggested Topics</h3>
+                        <!-- Suggested topics will appear here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Addendum / Custom Provisions</h2>
+                    <p>Add any supplementary clauses or custom provisions not covered by the topics above:</p>
+                    <textarea id="addendum" class="addendum-section" placeholder="Enter custom provisions here..."></textarea>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="card">
+                    <h2>Generated Output</h2>
+                    <div id="output" class="output-section">
+                        Your generated legal attributes will appear here after you click the "Generate" button.
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="generateBtn" class="btn-primary">Generate Contract Attributes</button>
+                        <button id="copyBtn" class="btn-secondary" disabled>Copy to Clipboard</button>
+                        <button id="exportBtn" class="btn-success" disabled>Export as DOCX</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Predefined legal topics
+        const predefinedTopics = [
+            "Arbitration",
+            "Payment Schedules",
+            "Delinquencies",
+            "Work Stoppage",
+            "Out-of-Scope Statements",
+            "Client Expectations",
+            "Confidentiality",
+            "Intellectual Property",
+            "Force Majeure",
+            "Termination Clauses",
+            "Governing Law",
+            "Dispute Resolution"
+        ];
+
+        // Sample AI-generated verbiage for each topic
+        const aiVerbiage = {
+            "Arbitration": "Any dispute arising under this agreement shall be settled by binding arbitration in accordance with the rules of the American Arbitration Association. The arbitration shall take place in [City, State], and the decision of the arbitrator shall be final and binding on both parties.",
+            "Payment Schedules": "Client agrees to pay Contractor according to the following schedule: [Specify payment schedule]. All invoices are due within [number] days of receipt. Late payments shall incur interest at the rate of [percentage] per month.",
+            "Confidentiality": "Both parties agree to maintain the confidentiality of all proprietary information received from the other party. This obligation of confidentiality shall survive the termination of this agreement for a period of [number] years.",
+            "Intellectual Property": "All intellectual property created by Contractor in the course of performing services under this agreement shall be the property of Client upon full payment. Contractor retains the right to display the work in their portfolio.",
+            "Delinquencies": "In the event that any payment is not made by the specified due date, the Client shall be considered delinquent. The Contractor may suspend services until all overdue payments are settled. The Client shall be responsible for all collection costs incurred due to delinquency, including attorney fees.",
+            "Work Stoppage": "If a work stoppage occurs due to reasons outside the control of either party, including but not limited to government actions or natural disasters, both parties agree to resume work as soon as practical. Any delays will be communicated promptly and handled according to the Force Majeure clause.",
+            "Out-of-Scope Statements": "Any services, tasks, or deliverables that are not explicitly mentioned in this agreement shall be considered out of scope. Any request for additional services outside the scope of this agreement shall require written approval from both parties and may result in additional charges.",
+            "Client Expectations": "The Client agrees to provide all necessary materials, information, and access to resources in a timely manner to ensure the successful execution of the services. Any delays in providing such resources may impact the project's schedule and may require adjustments to the timeline.",
+            "Force Majeure": "Neither party shall be held liable for failure to perform their obligations under this agreement due to circumstances beyond their reasonable control, including but not limited to natural disasters, war, strikes, or any other unforeseen event that prevents timely performance.",
+            "Termination Clauses": "Either party may terminate this agreement with [number] days' written notice. In the event of termination, the Client shall pay for all services rendered up until the date of termination. The Contractor shall provide all deliverables completed up to the termination date.",
+            "Governing Law": "This agreement shall be governed by and construed in accordance with the laws of the State of [State], without regard to its conflict of law principles. Any disputes shall be resolved in the courts located in [City, State].",
+            "Dispute Resolution": "In the event of any dispute arising out of or in connection with this agreement, the parties agree to first attempt to resolve the dispute through informal negotiations. If unresolved, the dispute shall be settled through binding arbitration as described in the Arbitration section.",
+        };
+
+        // State management
+        let state = {
+            selectedTopics: {},
+            customVerbiage: {},
+            addendum: "",
+            generatedOutput: "",
+            templates: JSON.parse(localStorage.getItem('legalTemplates')) || {}
+        };
+
+        // DOM elements
+        const topicList = document.querySelector('.topic-list');
+        const suggestedTopics = document.getElementById('suggestedTopics');
+        const addendum = document.getElementById('addendum');
+        const output = document.getElementById('output');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const templateSelect = document.getElementById('templateSelect');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const alertBox = document.getElementById('alertBox');
+
+        // Initialize the page
+        function init() {
+            renderTopics();
+            setupEventListeners();
+            loadTemplates();
+        }
+
+        // Render predefined topics
+        function renderTopics() {
+            predefinedTopics.forEach(topic => {
+                const topicItem = document.createElement('div');
+                topicItem.className = 'topic-item';
+                topicItem.innerHTML = `
+                    <input type="checkbox" id="topic-${topic}" data-topic="${topic}">
+                    <div class="topic-content">
+                        <label class="topic-label" for="topic-${topic}">${topic}</label>
+                        <textarea class="custom-verbiage hidden" data-topic="${topic}" 
+                                  placeholder="Enter custom verbiage or leave blank for AI-generated content"></textarea>
+                    </div>
+                `;
+                topicList.appendChild(topicItem);
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Topic selection
+            topicList.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const topic = e.target.dataset.topic;
+                    const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                    
+                    if (e.target.checked) {
+                        textarea.classList.remove('hidden');
+                        state.selectedTopics[topic] = true;
+                    } else {
+                        textarea.classList.add('hidden');
+                        delete state.selectedTopics[topic];
+                        delete state.customVerbiage[topic];
+                    }
+                }
+            });
+
+            // Custom verbiage input
+            topicList.addEventListener('input', (e) => {
+                if (e.target.classList.contains('custom-verbiage')) {
+                    const topic = e.target.dataset.topic;
+                    state.customVerbiage[topic] = e.target.value;
+                }
+            });
+
+            // Addendum input
+            addendum.addEventListener('input', (e) => {
+                state.addendum = e.target.value;
+            });
+
+            // Generate button
+            generateBtn.addEventListener('click', generateOutput);
+
+            // Copy button
+            copyBtn.addEventListener('click', copyToClipboard);
+
+            // Export button
+            exportBtn.addEventListener('click', exportAsDOCX);
+
+            // Save template button
+            saveTemplateBtn.addEventListener('click', saveTemplate);
+
+            // Load template
+            templateSelect.addEventListener('change', loadTemplate);
+        }
+
+        // Generate the output
+        async function generateOutput() {
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<span class="loading"></span> Generating...';
+            
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                let outputText = "";
+                
+                // Add selected topics with custom or AI-generated verbiage
+                for (const topic of Object.keys(state.selectedTopics)) {
+                    outputText += `**${topic}**\n`;
+                    if (state.customVerbiage[topic] && state.customVerbiage[topic].trim() !== "") {
+                        outputText += state.customVerbiage[topic] + "\n\n";
+                    } else {
+                        // Get AI-generated verbiage (in a real app, this would be an API call)
+                        outputText += aiVerbiage[topic] + "\n\n";
+                    }
+                }
+                
+                // Add addendum if provided
+                if (state.addendum.trim() !== "") {
+                    outputText += "**ADDENDUM**\n";
+                    outputText += state.addendum + "\n";
+                }
+                
+                state.generatedOutput = outputText;
+                output.textContent = outputText;
+                
+                // Enable output buttons
+                copyBtn.disabled = false;
+                exportBtn.disabled = false;
+                
+                showAlert('Legal attributes generated successfully!', 'success');
+            } catch (error) {
+                showAlert('Error generating legal attributes. Please try again.', 'error');
+                console.error('Generation error:', error);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = 'Generate Contract Attributes';
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            navigator.clipboard.writeText(state.generatedOutput)
+                .then(() => {
+                    showAlert('Copied to clipboard!', 'success');
+                })
+                .catch(err => {
+                    showAlert('Failed to copy to clipboard.', 'error');
+                    console.error('Copy error:', err);
+                });
+        }
+
+        // Export as DOCX (simplified version)
+        function exportAsDOCX() {
+            showAlert('In a complete implementation, this would export as a .docx file.', 'success');
+            // In a real implementation, this would use a library like docx.js
+        }
+
+        // Save template
+        function saveTemplate() {
+            const templateName = prompt('Enter a name for this template:');
+            if (!templateName) return;
+            
+            const templateData = {
+                selectedTopics: state.selectedTopics,
+                customVerbiage: state.customVerbiage
+            };
+            
+            state.templates[templateName] = templateData;
+            localStorage.setItem('legalTemplates', JSON.stringify(state.templates));
+            
+            // Update template dropdown
+            loadTemplates();
+            showAlert(`Template "${templateName}" saved successfully!`, 'success');
+        }
+
+        // Load templates into dropdown
+        function loadTemplates() {
+            // Clear existing options except the first one
+            while (templateSelect.options.length > 1) {
+                templateSelect.remove(1);
+            }
+            
+            // Add templates to dropdown
+            for (const name of Object.keys(state.templates)) {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                templateSelect.appendChild(option);
+            }
+        }
+
+        // Load a saved template
+        function loadTemplate() {
+            const templateName = templateSelect.value;
+            if (!templateName) return;
+            
+            const template = state.templates[templateName];
+            if (!template) return;
+            
+            // Reset all checkboxes and textareas
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const topic = checkbox.dataset.topic;
+                const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                textarea.classList.add('hidden');
+                textarea.value = "";
+            });
+            
+            // Apply template
+            state.selectedTopics = {...template.selectedTopics};
+            state.customVerbiage = {...template.customVerbiage};
+            
+            // Update UI
+            for (const topic of Object.keys(state.selectedTopics)) {
+                const checkbox = document.querySelector(`#topic-${topic}`);
+                const textarea = document.querySelector(`.custom-verbiage[data-topic="${topic}"]`);
+                
+                if (checkbox && textarea) {
+                    checkbox.checked = true;
+                    textarea.classList.remove('hidden');
+                    textarea.value = state.customVerbiage[topic] || "";
+                }
+            }
+            
+            showAlert(`Template "${templateName}" loaded successfully!`, 'success');
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            alertBox.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertBox.innerHTML = '';
+            }, 3000);
+        }
+
+        // Get suggested topics (simulated API call)
+        async function getSuggestedTopics() {
+            // In a real implementation, this would call the AI backend API
+            return ["Liability Limitations", "Warranties", "Indemnification"];
+        }
+
+        // Initialize the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
