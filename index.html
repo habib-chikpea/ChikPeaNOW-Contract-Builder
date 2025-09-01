@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChikPeaNOW Legal Clauses Generation</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-scale-balanced"></i>
+            <span>ChikPeaNOW Legal Clauses Generation</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </header>
+
+    <div class="container">
+        <h1>Legal Clauses Generation <span class="topic-count" id="selectedCount">0</span></h1>
+        <p>Generate legal clauses for your contracts with AI assistance. Select clauses, customize verbiage, and create professional contracts.</p>
+
+        <div class="template-section">
+            <select id="templateSelect">
+                <option value="">Load a saved template...</option>
+            </select>
+            <button id="saveTemplateBtn" class="btn-secondary">
+                <i class="fas fa-save"></i> Save Template
+            </button>
+            <button id="resetBtn" class="btn-danger">
+                <i class="fas fa-trash"></i> Reset Form
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="top-section">
+                <div class="card fade-in">
+                    <div class="topic-controls">
+                        <h2><i class="fas fa-list-check"></i> Legal Clauses</h2>
+                        <div>
+                            <input type="checkbox" id="selectAll">
+                            <label for="selectAll">Select All</label>
+                        </div>
+                    </div>
+                    <div class="clause-list" id="clauseList">
+                        <!-- Clauses will be populated by script.js -->
+                    </div>
+                </div>
+
+                <div class="card fade-in">
+                    <div class="section-toggle">
+                        <input type="checkbox" id="addendumToggle" checked>
+                        <label for="addendumToggle"><h2><i class="fas fa-file-plus"></i> Addendum / Custom Provisions</h2></label>
+                    </div>
+                    <div class="content" id="addendumContent">
+                        <p>Add any supplementary clauses or custom provisions not covered by the topics above:</p>
+                        <textarea id="addendum" class="addendum-section" placeholder="Enter custom provisions here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                 <div class="card fade-in">
+                    <h2><i class="fas fa-file-contract"></i> Generated Output</h2>
+                    <div class="progress-bar">
+                        <div class="progress" id="generateProgress"></div>
+                    </div>
+                    <div id="output" class="output-section">
+                        Your generated legal clauses will appear here after you click the "Generate" button.
+                    </div>
+                    <div class="action-buttons">
+                         <button id="generateBtn" class="btn-primary"><i class="fas fa-bolt"></i> Generate Contract</button>
+                         <button id="summarizeBtn" class="btn-primary" disabled><i class="fas fa-wand-magic-sparkles"></i> ✨ Summarize with AI</button>
+                         <button id="copyBtn" class="btn-secondary" disabled><i class="fas fa-copy"></i> Copy to Clipboard</button>
+                         <button id="exportBtn" class="btn-success" disabled><i class="fas fa-download"></i> Export as DOCX</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer">
+        <!-- Toasts will be added here dynamically -->
+    </div>
+
+    <footer>
+        <p>ChikPeaNOW Legal Clauses Generator | © 2025 All rights reserved</p>
+    </footer>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>
