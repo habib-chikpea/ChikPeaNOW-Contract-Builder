@@ -1,12 +1,128 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- INITIAL DATA & STATE ---
     const getInitialData = () => [
-        { id: `clause_${Date.now()}_${Math.random()}`, title: "Introduction", content: "", subClauses: [
-            { id: `clause_${Date.now()}_${Math.random()}`, title: "Parties Involved", content: "", subClauses: [] },
-            { id: `clause_${Date.now()}_${Math.random()}`, title: "Purpose of Agreement", content: "", subClauses: [] }
-        ]},
-        { id: `clause_${Date.now()}_${Math.random()}`, title: "Scope of Work", content: "", subClauses: [] }
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Introduction",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Parties Involved", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Purpose of Agreement", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definitions", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Scope of Work",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Project Description", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Deliverables", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Timeline and Milestones", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Changes to Scope", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Responsibilities",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Contractor", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Client", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Communication Protocols", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Compensation",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Payment Terms", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Expenses", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Invoicing Process", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Performance Standards",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Quality Assurance", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Performance Metrics", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Review and Acceptance Process", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Confidentiality",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definition of Confidential Information", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Obligations of Confidentiality", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Exceptions", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Intellectual Property",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Ownership of Work Product", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Licensing Rights", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Use of Pre-existing Materials", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Term and Termination",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Contract Duration", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Cause", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Convenience", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Liability and Indemnification",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Limitation of Liability", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Indemnification Obligations", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Dispute Resolution",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Governing Law", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Mediation and Arbitration", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Jurisdiction", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Miscellaneous",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Force Majeure", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Amendments", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Severability", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Entire Agreement", content: "", subClauses: [] }
+            ]
+        },
+        {
+            id: `clause_${Date.now()}_${Math.random()}`,
+            title: "Signatures",
+            content: "",
+            subClauses: [
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Execution of Agreement", content: "", subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Witnesses (if applicable)", content: "", subClauses: [] }
+            ]
+        }
     ];
+
 
     let contractData = getInitialData();
     let templates = JSON.parse(localStorage.getItem('legalContractTemplates')) || {};
@@ -54,11 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editor.innerHTML = '';
         const renumberedData = renumberClauses(JSON.parse(JSON.stringify(contractData)));
         contractData = renumberedData; // Update main state with new numbers
-        
+
         contractData.forEach(clause => editor.appendChild(createClauseElement(clause)));
-        
+
         // Make sure sub-clause visibility is correct after re-render
-        if(isCollapsed) {
+        if (isCollapsed) {
             document.querySelectorAll('.clause-content').forEach(el => el.style.display = 'none');
         }
     };
@@ -72,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const numberMatch = clause.title.match(/^[\d.]+/);
         const number = numberMatch ? numberMatch[0] : '';
         const titleText = numberMatch ? clause.title.substring(numberMatch[0].length).trim() : clause.title;
-        
+
         clauseEl.innerHTML = `
             <div class="clause-header">
                 <i class="fas fa-grip-vertical drag-handle"></i>
@@ -88,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <textarea class="clause-textarea" placeholder="Enter clause content or generate with AI...">${clause.content}</textarea>
                 <div class="sub-clauses-container"></div>
             </div>`;
-        
+
         const subClausesContainer = clauseEl.querySelector('.sub-clauses-container');
         if (clause.subClauses && clause.subClauses.length > 0) {
             clause.subClauses.forEach(sub => subClausesContainer.appendChild(createClauseElement(sub, true)));
@@ -121,11 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return clause;
         });
     };
-    
+
     // --- OUTPUT GENERATION ---
     const generateFinalDocument = () => {
         let finalHtml = `<h2>${contractData[0] ? contractData[0].title.replace(/^[\d.]+\s*/, '') : 'Contract'}</h2>`; // Use first clause title as doc title
-        
+
         const createHtmlForClauses = (clauses) => {
             let html = '';
             clauses.forEach(clause => {
@@ -192,14 +308,14 @@ document.addEventListener('DOMContentLoaded', () => {
             button.disabled = false;
         }
     };
-    
+
     const handleEditorInput = (e) => {
         const target = e.target;
         const clauseEl = target.closest('.clause, .sub-clause');
         if (!clauseEl) return;
         const id = clauseEl.dataset.id;
         const { clause } = findClause(id);
-        
+
         if (target.matches('.clause-title')) {
             const numberMatch = clause.title.match(/^[\d.]+\s*/);
             const numberPrefix = numberMatch ? numberMatch[0] : '';
@@ -235,24 +351,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
             if (!draggedElementId || !clauseEl || draggedElementId === clauseEl.dataset.id) return;
-            
+
             const { clause: draggedClause, parent: sourceParent } = findClause(draggedElementId);
             const { parent: targetParent } = findClause(clauseEl.dataset.id);
 
             if (sourceParent && targetParent) {
-                 if (sourceParent === targetParent) {
+                if (sourceParent === targetParent) {
                     const sourceIndex = sourceParent.findIndex(c => c.id === draggedElementId);
                     sourceParent.splice(sourceIndex, 1);
                     const targetIndex = targetParent.findIndex(c => c.id === clauseEl.dataset.id);
                     targetParent.splice(targetIndex, 0, draggedClause);
                     renderContract();
                 } else {
-                     showToast("Moving clauses between different levels is not yet supported.", "warning");
+                    showToast("Moving clauses between different levels is not yet supported.", "warning");
                 }
             }
         }
     };
-    
+
     // --- TEMPLATES ---
     const saveTemplate = () => {
         const name = prompt("Enter a name for this template:");
@@ -270,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContract();
         showToast(`Template "${name}" loaded!`, 'success');
     };
-    
+
     const updateTemplateDropdown = () => {
         templateSelect.innerHTML = '<option value="">Load a saved template...</option>';
         Object.keys(templates).forEach(name => {
@@ -279,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const resetForm = () => {
-        if(confirm("Are you sure you want to reset the editor to the default template?")){
+        if (confirm("Are you sure you want to reset the editor to the default template?")) {
             contractData = getInitialData();
             renderContract();
             output.innerHTML = 'Your generated document will appear here after you click "Generate Document".';
@@ -288,13 +404,13 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Editor has been reset.", "success");
         }
     };
-    
+
     // --- EVENT LISTENERS & INITIALIZATION ---
     addClauseBtn.addEventListener('click', () => {
         contractData.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "New Clause", content: "", subClauses: [] });
         renderContract();
     });
-    
+
     addAddendumBtn.addEventListener('click', () => {
         contractData.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "Addendum", content: "This addendum modifies the agreement as follows:", subClauses: [] });
         renderContract();
@@ -307,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         e.currentTarget.innerHTML = isCollapsed ? '<i class="fas fa-expand-alt"></i> Expand All' : '<i class="fas fa-compress-alt"></i> Collapse All';
     });
-    
+
     generateBtn.addEventListener('click', generateFinalDocument);
     summarizeBtn.addEventListener('click', async () => {
         summarizeBtn.disabled = true;
@@ -355,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('dark-mode');
         }
     }
-    
+
     function showToast(message, type = 'success') {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
