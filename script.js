@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- MOCK AI DATA & STATE ---
+    const mockAiVerbiage = {
+        "Introduction": "This Agreement is made and entered into as of [Date], by and between [Party A Name], with a principal place of business at [Address] (hereinafter referred to as 'Party A'), and [Party B Name], with a principal place of business at [Address] (hereinafter referred to as 'Party B').",
+        "Parties Involved": "This Agreement is made and entered into by and between [Party A Name] and [Party B Name], collectively referred to as the 'Parties'.",
+        "Purpose of Agreement": "The purpose of this Agreement is to set forth the terms and conditions under which Party A will provide [services/goods] to Party B, and Party B will compensate Party A for such [services/goods].",
+        "Scope of Work": "Party A shall provide the following services: [detailed description of services]. All services shall be performed in a professional and workmanlike manner, consistent with generally accepted industry standards.",
+        "Payment Terms": "Payment for services rendered under this Agreement shall be made according to the following schedule: [payment terms]. Payments shall be made within [number] days of receipt of invoice.",
+        "Confidentiality": "'Confidential Information' refers to all proprietary or confidential data, whether written or oral, disclosed by either party to the other. Each party agrees to maintain the confidentiality of all Confidential Information and to use such information solely for the purpose of performing its obligations under this Agreement.",
+        "Termination": "Either party may terminate this Agreement for convenience by providing [number] days’ written notice to the other party. Upon termination, Party A shall be entitled to compensation for services rendered up to the effective date of termination.",
+        "Governing Law": "This Agreement shall be governed by and construed in accordance with the laws of [Jurisdiction]. Any disputes arising under this Agreement shall be subject to the exclusive jurisdiction of the courts of [Jurisdiction].",
+        "Intellectual Property": "Unless otherwise agreed, Party A shall retain ownership of all Work Product produced in connection with this Agreement. This includes any intellectual property rights therein, such as copyrights, trademarks, and patents.",
+        "Liability and Indemnification": "Each party agrees to indemnify and hold harmless the other party from any third-party claims, liabilities, or expenses arising from its own acts or omissions in connection with this Agreement.",
+        "Addendum": "This addendum is attached to and made a part of the Agreement. The terms of this addendum shall prevail over any conflicting terms in the Agreement."
+    };
+    
     // --- INITIAL DATA & STATE ---
     const getInitialData = () => [
         {
@@ -126,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let contractData = getInitialData();
     let templates = JSON.parse(localStorage.getItem('legalContractTemplates')) || {};
-    let isCollapsed = false;
+    let isCollapsed = true; // Start with all clauses collapsed
 
     // --- DOM ELEMENTS ---
     const editor = document.getElementById('contract-editor');
@@ -142,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copyBtn');
     const generateProgress = document.getElementById('generateProgress');
     const themeToggle = document.getElementById('themeToggle');
+    const aiFillBtn = document.getElementById('aiFillBtn');
 
     // --- GEMINI API ---
     async function callGeminiApi(prompt, systemInstruction = null) {
@@ -169,14 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderContract = () => {
         editor.innerHTML = '';
         const renumberedData = renumberClauses(JSON.parse(JSON.stringify(contractData)));
-        contractData = renumberedData; // Update main state with new numbers
-
+        contractData = renumberedData; // Update main state
         contractData.forEach(clause => editor.appendChild(createClauseElement(clause)));
-
-        // Make sure sub-clause visibility is correct after re-render
-        if (isCollapsed) {
-            document.querySelectorAll('.clause-content').forEach(el => el.style.display = 'none');
-        }
     };
 
     const createClauseElement = (clause, isSubClause = false) => {
@@ -192,24 +202,25 @@ document.addEventListener('DOMContentLoaded', () => {
         clauseEl.innerHTML = `
             <div class="clause-header">
                 <i class="fas fa-grip-vertical drag-handle"></i>
-                <strong class="clause-number">${number}</strong>
-                <input type="text" class="clause-title" value="${titleText}" placeholder="Clause title...">
+                <strong class="clause-number">${clause.title.match(/^[\d.]+/)?.[0] || ''}</strong>
+                <input type="text" class="clause-title" value="${clause.title.replace(/^[\d.]+\s*/, '')}" placeholder="Clause title...">
                 <div class="clause-actions">
-                    <button class="btn-icon ai-generate-btn" title="Generate with AI"><i class="fas fa-wand-magic-sparkles"></i></button>
+                    <button class="btn-icon ai-generate-btn" title="Generate with AI (Mock)"><i class="fas fa-magic"></i></button>
+                    <button class="btn-icon ai-review-btn" title="Review with AI"><i class="fas fa-tasks"></i></button>
                     <button class="btn-icon add-sub-clause-btn" title="Add Sub-clause"><i class="fas fa-plus"></i></button>
                     <button class="btn-icon remove-clause-btn" title="Remove Clause"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-            <div class="clause-content">
+            <div class="clause-content" style="display: ${isCollapsed ? 'none' : 'block'};">
                 <textarea class="clause-textarea" placeholder="Enter clause content or generate with AI...">${clause.content}</textarea>
+                <div class="clause-feedback hidden"></div>
                 <div class="sub-clauses-container"></div>
             </div>`;
-
+        
         const subClausesContainer = clauseEl.querySelector('.sub-clauses-container');
-        if (clause.subClauses && clause.subClauses.length > 0) {
+        if (clause.subClauses?.length > 0) {
             clause.subClauses.forEach(sub => subClausesContainer.appendChild(createClauseElement(sub, true)));
         }
-
         return clauseEl;
     };
 
@@ -238,8 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- OUTPUT GENERATION ---
-    const generateFinalDocument = () => {
+    // --- OUTPUT GENERATION & AI FILL ---
+    const generateFinalDocument = async (autoFill = false) => {
+        if (autoFill) {
+            await fillEmptyClausesWithAI();
+        }
+
         let finalHtml = `<h2>${contractData[0] ? contractData[0].title.replace(/^[\d.]+\s*/, '') : 'Contract'}</h2>`; // Use first clause title as doc title
 
         const createHtmlForClauses = (clauses) => {
@@ -264,6 +279,23 @@ document.addEventListener('DOMContentLoaded', () => {
         copyBtn.disabled = false;
     };
 
+    const fillEmptyClausesWithAI = async (clauses = contractData) => {
+        for (const clause of clauses) {
+            if (!clause.content.trim()) {
+                const title = clause.title.replace(/^[\d.]+\s*/, '');
+                clause.content = getMockAiContent(title);
+            }
+            if (clause.subClauses?.length > 0) {
+                await fillEmptyClausesWithAI(clause.subClauses);
+            }
+        }
+    };
+
+    const getMockAiContent = (title) => {
+        // Find the best matching mock data
+        const key = Object.keys(mockAiVerbiage).find(k => title.toLowerCase().includes(k.toLowerCase()));
+        return key ? mockAiVerbiage[key] : "Content for this clause could not be found in mock data.";
+    };
 
     // --- EVENT HANDLERS ---
     const handleEditorClick = async (e) => {
@@ -271,6 +303,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const clauseEl = target.closest('.clause, .sub-clause');
         if (!clauseEl) return;
         const id = clauseEl.dataset.id;
+        const { clause } = findClause(id);
+
+        if (target.closest('.clause-header')) {
+            // Allow clicking anywhere on header (except buttons) to toggle
+            if (!target.closest('button, input')) {
+                const content = clauseEl.querySelector('.clause-content');
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        if (target.closest('.ai-generate-btn')) { // MOCK DATA
+            const title = clause.title.replace(/^[\d.]+\s*/, '');
+            const mockContent = getMockAiContent(title);
+            clause.content = mockContent;
+            clauseEl.querySelector('.clause-textarea').value = mockContent;
+            showToast("Mock content added.", "success");
+        }
+
+        if (target.closest('.ai-review-btn')) { // LIVE AI
+            const button = target.closest('.ai-review-btn');
+            const feedbackEl = clauseEl.querySelector('.clause-feedback');
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            button.disabled = true;
+
+            const prompt = `Please review the following legal clause for clarity, completeness, and potential ambiguities. Provide brief, actionable feedback. Clause: "${clause.content}"`;
+            const feedback = await callGeminiApi(prompt, "You are a helpful legal assistant providing feedback on contract clauses.");
+            
+            if (feedback) {
+                feedbackEl.innerHTML = `<strong>AI Feedback:</strong> ${feedback}`;
+                feedbackEl.classList.remove('hidden');
+            }
+            button.innerHTML = `<i class="fas fa-tasks"></i>`;
+            button.disabled = false;
+        }
 
         if (target.closest('.add-sub-clause-btn')) {
             const result = findClause(id);
@@ -291,21 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-        }
-        if (target.closest('.ai-generate-btn')) {
-            const button = target.closest('.ai-generate-btn');
-            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-            button.disabled = true;
-            const { clause } = findClause(id);
-            const title = clause.title.replace(/^[\d.]+\s*/, '');
-            const prompt = `Generate a standard legal clause for a contract on the topic of "${title}".`;
-            const generatedText = await callGeminiApi(prompt, "You are a legal assistant AI specializing in drafting clear contract clauses.");
-            if (generatedText) {
-                clause.content = generatedText;
-                clauseEl.querySelector('.clause-textarea').value = generatedText;
-            }
-            button.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i>`;
-            button.disabled = false;
         }
     };
 
@@ -457,6 +508,15 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.addEventListener('dragend', handleDragAndDrop);
     editor.addEventListener('dragover', handleDragAndDrop);
     editor.addEventListener('drop', handleDragAndDrop);
+
+    aiFillBtn.addEventListener('click', async () => {
+        if (confirm("This will fill all empty clauses with AI-generated content. Proceed?")) {
+            await fillEmptyClausesWithAI();
+            renderContract(); // Re-render to show the new content in the editor
+            showToast("Empty clauses filled with AI content.", "success");
+        }
+    });
+    generateBtn.addEventListener('click', () => generateFinalDocument(true)); // Pass true to auto-fill on generate
 
     init();
 

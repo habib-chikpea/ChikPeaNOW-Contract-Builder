@@ -32,7 +32,7 @@
             <div class="card editor-card">
                 <div class="editor-controls">
                     <h2><i class="fas fa-pencil-alt"></i> Contract Editor</h2>
-                    <button id="collapseAllBtn" class="btn-secondary-outline"><i class="fas fa-compress-alt"></i> Collapse All</button>
+                    <button id="collapseAllBtn" class="btn-secondary-outline"><i class="fas fa-compress-alt"></i> Expand All</button>
                 </div>
                 <div id="contract-editor" class="contract-editor">
                     <!-- Clauses will be rendered here by script.js -->
@@ -44,7 +44,10 @@
             </div>
 
             <div class="card output-card">
-                <h2><i class="fas fa-file-contract"></i> Final Document</h2>
+                <div class="output-controls">
+                    <h2><i class="fas fa-file-contract"></i> Final Document</h2>
+                    <button id="aiFillBtn" class="btn-primary"><i class="fas fa-wand-magic-sparkles"></i> ✨ AI-Fill Document</button>
+                </div>
                 <div class="progress-bar">
                     <div class="progress" id="generateProgress"></div>
                 </div>
@@ -53,7 +56,7 @@
                 </div>
                 <div class="action-buttons">
                      <button id="generateBtn" class="btn-primary"><i class="fas fa-bolt"></i> Generate Document</button>
-                     <button id="summarizeBtn" class="btn-primary" disabled><i class="fas fa-wand-magic-sparkles"></i> ✨ Summarize with AI</button>
+                     <button id="summarizeBtn" class="btn-primary" disabled><i class="fas fa-brain"></i> ✨ Summarize with AI</button>
                      <button id="copyBtn" class="btn-secondary" disabled><i class="fas fa-copy"></i> Copy Text</button>
                 </div>
             </div>
