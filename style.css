@@ -85,6 +85,7 @@ button { padding: 10px 16px; border: none; border-radius: var(--border-radius); 
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { background-color: var(--success-color); }
 .toast.error { background-color: var(--danger-color); }
+.toast.warning { background-color: var(--primary-color); }
 
 footer { text-align: center; margin-top: 30px; padding: 15px; color: #6c757d; font-size: 0.85rem; }
 .progress-bar { height: 4px; width: 100%; background: #f0f0f0; border-radius: 4px; overflow: hidden; margin-top: 8px; margin-bottom: 10px; }
