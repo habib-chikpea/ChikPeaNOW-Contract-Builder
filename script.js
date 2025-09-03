@@ -13,127 +13,139 @@ document.addEventListener('DOMContentLoaded', () => {
         "Liability and Indemnification": "Each party agrees to indemnify and hold harmless the other party from any third-party claims, liabilities, or expenses arising from its own acts or omissions in connection with this Agreement.",
         "Addendum": "This addendum is attached to and made a part of the Agreement. The terms of this addendum shall prevail over any conflicting terms in the Agreement."
     };
-    
+
     // --- INITIAL DATA & STATE ---
     const getInitialData = () => [
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Introduction",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Parties Involved", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Purpose of Agreement", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definitions", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Parties Involved", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Purpose of Agreement", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definitions", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Scope of Work",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Project Description", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Deliverables", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Timeline and Milestones", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Changes to Scope", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Project Description", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Deliverables", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Timeline and Milestones", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Changes to Scope", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Responsibilities",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Contractor", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Client", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Communication Protocols", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Contractor", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Responsibilities of the Client", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Communication Protocols", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Compensation",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Payment Terms", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Expenses", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Invoicing Process", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Payment Terms", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Expenses", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Invoicing Process", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Performance Standards",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Quality Assurance", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Performance Metrics", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Review and Acceptance Process", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Quality Assurance", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Performance Metrics", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Review and Acceptance Process", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Confidentiality",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definition of Confidential Information", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Obligations of Confidentiality", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Exceptions", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Definition of Confidential Information", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Obligations of Confidentiality", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Exceptions", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Intellectual Property",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Ownership of Work Product", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Licensing Rights", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Use of Pre-existing Materials", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Ownership of Work Product", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Licensing Rights", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Use of Pre-existing Materials", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Term and Termination",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Contract Duration", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Cause", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Convenience", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Contract Duration", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Cause", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Termination for Convenience", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Liability and Indemnification",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Limitation of Liability", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Indemnification Obligations", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Limitation of Liability", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Indemnification Obligations", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Dispute Resolution",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Governing Law", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Mediation and Arbitration", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Jurisdiction", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Governing Law", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Mediation and Arbitration", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Jurisdiction", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Miscellaneous",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Force Majeure", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Amendments", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Severability", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Entire Agreement", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Force Majeure", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Amendments", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Severability", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Entire Agreement", content: "", isCollapsed: true, subClauses: [] }
             ]
         },
         {
             id: `clause_${Date.now()}_${Math.random()}`,
             title: "Signatures",
             content: "",
+            isCollapsed: true,
             subClauses: [
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Execution of Agreement", content: "", subClauses: [] },
-                { id: `clause_${Date.now()}_${Math.random()}`, title: "Witnesses (if applicable)", content: "", subClauses: [] }
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Execution of Agreement", content: "", isCollapsed: true, subClauses: [] },
+                { id: `clause_${Date.now()}_${Math.random()}`, title: "Witnesses (if applicable)", content: "", isCollapsed: true, subClauses: [] }
             ]
         }
     ];
@@ -194,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clauseEl.className = isSubClause ? 'sub-clause' : 'clause';
         clauseEl.dataset.id = clause.id;
         clauseEl.draggable = true;
-        
+
         clauseEl.innerHTML = `
             <div class="clause-header">
                 <i class="fas fa-grip-vertical drag-handle"></i>
@@ -212,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="clause-feedback hidden"></div>
                 <div class="sub-clauses-container"></div>
             </div>`;
-        
+
         const subClausesContainer = clauseEl.querySelector('.sub-clauses-container');
         if (clause.subClauses?.length > 0) {
             clause.subClauses.forEach(sub => subClausesContainer.appendChild(createClauseElement(sub, true)));
@@ -301,9 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clause.isCollapsed = false; // BUG FIX: Ensure parent expands
             renderContract();
         }
-        
+
         if (target.closest('.remove-clause-btn')) {
-             if (confirm('Are you sure you want to remove this clause and all its sub-clauses?')) {
+            if (confirm('Are you sure you want to remove this clause and all its sub-clauses?')) {
                 const parent = result.parent;
                 const index = parent.findIndex(c => c.id === id);
                 if (index > -1) {
