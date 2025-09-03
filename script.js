@@ -150,10 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-
     let contractData = getInitialData();
     let templates = JSON.parse(localStorage.getItem('legalContractTemplates')) || {};
-    let isGloballyCollapsed = true; // For the "Collapse/Expand All" button state
+    let isGloballyCollapsed = true;
 
     // --- DOM ELEMENTS ---
     const editor = document.getElementById('contract-editor');
@@ -167,13 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateBtn = document.getElementById('generateBtn');
     const summarizeBtn = document.getElementById('summarizeBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const generateProgress = document.getElementById('generateProgress');
-    const themeToggle = document.getElementById('themeToggle');
     const aiFillBtn = document.getElementById('aiFillBtn');
+    const themeToggle = document.getElementById('themeToggle');
 
-    // --- GEMINI API (Live for Summarizer & Reviewer) ---
+    // --- GEMINI API ---
     async function callGeminiApi(prompt, systemInstruction = null) {
-        const API_KEY = ""; // Leave blank, handled by environment
+        const API_KEY = "";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
         const payload = { contents: [{ parts: [{ text: prompt }] }] };
         if (systemInstruction) {
@@ -185,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
             if (!text) throw new Error("Invalid API response.");
-            return text.replace(/(\*\*|`)/g, ''); // Clean markdown characters
+            return text.replace(/(\*\*|`)/g, '');
         } catch (error) {
             console.error("Gemini API Error:", error);
             showToast("AI generation failed.", "error");
@@ -194,11 +192,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- RENDER & UI ---
-    const renderContract = () => {
+    const renderContract = (focusId = null) => {
+        const editorScrollTop = editor.scrollTop;
         editor.innerHTML = '';
-        const renumberedData = renumberClauses(JSON.parse(JSON.stringify(contractData)));
-        contractData = renumberedData; // Update main state
+        contractData = renumberClauses(JSON.parse(JSON.stringify(contractData)));
         contractData.forEach(clause => editor.appendChild(createClauseElement(clause)));
+        editor.scrollTop = editorScrollTop;
+
+        if (focusId) {
+            const newEl = editor.querySelector(`[data-id="${focusId}"]`);
+            if (newEl) {
+                newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const titleInput = newEl.querySelector('.clause-title');
+                if (titleInput) {
+                    titleInput.focus();
+                    titleInput.select();
+                }
+                newEl.classList.add('highlight');
+                setTimeout(() => newEl.classList.remove('highlight'), 1500);
+            }
+        }
     };
 
     const createClauseElement = (clause, isSubClause = false) => {
@@ -232,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return clauseEl;
     };
 
+    // --- DATA MANIPULATION & STATE ---
     const findClause = (id, data = contractData, parent = contractData) => {
         for (const clause of data) {
             if (clause.id === id) return { clause, parent };
@@ -257,16 +271,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- OUTPUT GENERATION & AI FILL ---
     const generateFinalDocument = (clauses = contractData) => {
-        let finalHtml = `<h2>Contract Document</h2>`;
+        let finalHtml = `<div class="summary-section hidden" id="summarySection"></div><h2>Contract Document</h2>`;
         const createHtmlForClauses = (clauseList) => {
+            let html = '';
             clauseList.forEach(clause => {
-                finalHtml += `<div><h3>${clause.title}</h3><p>${clause.content.replace(/\n/g, '<br>') || '...'}</p></div>`;
+                html += `<div><h3>${clause.title}</h3><p>${clause.content.replace(/\n/g, '<br>') || '...'}</p></div>`;
                 if (clause.subClauses?.length > 0) {
-                    finalHtml += `<div style="margin-left: 20px;">${createHtmlForClauses(clause.subClauses)}</div>`;
+                    html += `<div style="margin-left: 20px;">${createHtmlForClauses(clause.subClauses)}</div>`;
                 }
             });
+            return html;
         };
-        createHtmlForClauses(clauses);
+        finalHtml += createHtmlForClauses(clauses);
         output.innerHTML = finalHtml;
         summarizeBtn.disabled = false;
         copyBtn.disabled = false;
@@ -274,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const fillEmptyClausesWithAI = (clauses = contractData) => {
-        for (const clause of clauses) {
+        clauses.forEach(clause => {
             if (!clause.content.trim()) {
                 const title = clause.title.replace(/^[\d.]+\s*/, '');
                 clause.content = getMockAiContent(title);
@@ -282,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (clause.subClauses?.length > 0) {
                 fillEmptyClausesWithAI(clause.subClauses);
             }
-        }
+        });
     };
 
     const getMockAiContent = (title) => {
@@ -297,9 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!clauseEl) return;
         const id = clauseEl.dataset.id;
         const result = findClause(id);
-        const clause = result ? result.clause : null;
-
-        if (!clause) return;
+        if (!result) return;
+        const { clause } = result;
 
         if (target.closest('.clause-header') && !target.closest('button, input, .drag-handle')) {
             const content = clauseEl.querySelector('.clause-content');
@@ -309,14 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (target.closest('.add-sub-clause-btn')) {
             if (!clause.subClauses) clause.subClauses = [];
-            clause.subClauses.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "New Sub-clause", content: "", isCollapsed: false, subClauses: [] });
-            clause.isCollapsed = false; // BUG FIX: Ensure parent expands
-            renderContract();
+            const newSubClause = { id: `clause_${Date.now()}_${Math.random()}`, title: "New Sub-clause", content: "", isCollapsed: false, subClauses: [] };
+            clause.subClauses.push(newSubClause);
+            clause.isCollapsed = false;
+            renderContract(newSubClause.id);
         }
 
         if (target.closest('.remove-clause-btn')) {
             if (confirm('Are you sure you want to remove this clause and all its sub-clauses?')) {
-                const parent = result.parent;
+                const { parent } = result;
                 const index = parent.findIndex(c => c.id === id);
                 if (index > -1) {
                     parent.splice(index, 1);
@@ -353,7 +369,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const clauseEl = target.closest('.clause, .sub-clause');
         if (!clauseEl) return;
         const id = clauseEl.dataset.id;
-        const { clause } = findClause(id);
+        const result = findClause(id);
+        if (!result) return;
+        const { clause } = result;
 
         if (target.matches('.clause-title')) {
             const numberMatch = clause.title.match(/^[\d.]+\s*/);
@@ -368,15 +386,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DRAG & DROP ---
     let draggedElementId = null;
     const handleDragAndDrop = (e) => {
-        const target = e.target;
-        const clauseEl = target.closest('.clause, .sub-clause');
+        const clauseEl = e.target.closest('.clause, .sub-clause');
 
         if (e.type === 'dragstart' && clauseEl) {
             draggedElementId = clauseEl.dataset.id;
             setTimeout(() => clauseEl.classList.add('dragging'), 0);
         }
-        if (e.type === 'dragend' && clauseEl) {
-            clauseEl.classList.remove('dragging');
+        if (e.type === 'dragend') {
+            const draggingEl = document.querySelector('.dragging');
+            if (draggingEl) draggingEl.classList.remove('dragging');
             draggedElementId = null;
         }
         if (e.type === 'dragover') {
@@ -394,16 +412,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const { clause: draggedClause, parent: sourceParent } = findClause(draggedElementId);
             const { parent: targetParent } = findClause(clauseEl.dataset.id);
 
-            if (sourceParent && targetParent) {
-                if (sourceParent === targetParent) {
-                    const sourceIndex = sourceParent.findIndex(c => c.id === draggedElementId);
-                    sourceParent.splice(sourceIndex, 1);
-                    const targetIndex = targetParent.findIndex(c => c.id === clauseEl.dataset.id);
-                    targetParent.splice(targetIndex, 0, draggedClause);
-                    renderContract();
-                } else {
-                    showToast("Moving clauses between different levels is not yet supported.", "warning");
-                }
+            if (sourceParent && targetParent && sourceParent === targetParent) {
+                const sourceIndex = sourceParent.findIndex(c => c.id === draggedElementId);
+                sourceParent.splice(sourceIndex, 1);
+                const targetIndex = targetParent.findIndex(c => c.id === clauseEl.dataset.id);
+                targetParent.splice(targetIndex, 0, draggedClause);
+                renderContract();
+            } else {
+                showToast("Moving clauses between different levels is not yet supported.", "warning");
             }
         }
     };
@@ -440,19 +456,22 @@ document.addEventListener('DOMContentLoaded', () => {
             output.innerHTML = 'Your generated document will appear here after you click "Generate Document".';
             summarizeBtn.disabled = true;
             copyBtn.disabled = true;
+            templateSelect.value = ''; // FIX: Reset template dropdown
             showToast("Editor has been reset.", "success");
         }
     };
 
     // --- EVENT LISTENERS & INITIALIZATION ---
     addClauseBtn.addEventListener('click', () => {
-        contractData.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "New Clause", content: "", subClauses: [] });
-        renderContract();
+        const newClause = { id: `clause_${Date.now()}_${Math.random()}`, title: "New Clause", content: "", isCollapsed: false, subClauses: [] };
+        contractData.push(newClause);
+        renderContract(newClause.id);
     });
 
     addAddendumBtn.addEventListener('click', () => {
-        contractData.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "Addendum", content: "This addendum modifies the agreement as follows:", subClauses: [] });
-        renderContract();
+        const newAddendum = { id: `clause_${Date.now()}_${Math.random()}`, title: "Addendum", content: "This addendum modifies the agreement as follows:", isCollapsed: false, subClauses: [] };
+        contractData.push(newAddendum);
+        renderContract(newAddendum.id);
     });
 
     collapseAllBtn.addEventListener('click', (e) => {
@@ -468,21 +487,24 @@ document.addEventListener('DOMContentLoaded', () => {
         e.currentTarget.innerHTML = isGloballyCollapsed ? '<i class="fas fa-expand-alt"></i> Expand All' : '<i class="fas fa-compress-alt"></i> Collapse All';
     });
 
-    generateBtn.addEventListener('click', generateFinalDocument);
+    generateBtn.addEventListener('click', () => {
+        generateFinalDocument(contractData);
+        showToast("Document generated!", "success");
+    });
+
     summarizeBtn.addEventListener('click', async () => {
         summarizeBtn.disabled = true;
         summarizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Summarizing...';
         const contractText = output.innerText;
         const prompt = `Summarize the following legal contract in simple language: \n\n${contractText}`;
         const summary = await callGeminiApi(prompt, "You are an AI assistant that simplifies legal documents.");
-        if (summary) {
-            const summaryEl = document.createElement('div');
-            summaryEl.className = 'summary-section';
-            summaryEl.innerHTML = `<h3><i class="fas fa-wand-magic-sparkles"></i> AI Summary</h3><p>${summary.replace(/\n/g, '<br>')}</p>`;
-            output.prepend(summaryEl);
+        const summaryEl = document.getElementById('summarySection');
+        if (summary && summaryEl) {
+            summaryEl.innerHTML = `<h3><i class="fas fa-brain"></i> AI Summary</h3><p>${summary.replace(/\n/g, '<br>')}</p>`;
+            summaryEl.classList.remove('hidden');
         }
         summarizeBtn.disabled = false;
-        summarizeBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> ✨ Summarize with AI';
+        summarizeBtn.innerHTML = '<i class="fas fa-brain"></i> ✨ Summarize with AI';
     });
 
     copyBtn.addEventListener('click', () => {
@@ -509,25 +531,22 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast("Empty clauses filled with AI content.", "success");
         }
     });
-    generateBtn.addEventListener('click', () => {
-        generateFinalDocument(contractData);
-        showToast("Document generated!", "success");
-    });
-    init();
 
-    function init() {
+    const init = () => {
         renderContract();
         updateTemplateDropdown();
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            themeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         }
-    }
+    };
 
-    function showToast(message, type = 'success') {
+    const showToast = (message, type = 'success') => {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
@@ -538,6 +557,8 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 500);
         }, 3000);
-    }
+    };
+
+    init();
 });
 
