@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let contractData = getInitialData();
     let templates = JSON.parse(localStorage.getItem('legalContractTemplates')) || {};
-    let isCollapsed = true; // Start with all clauses collapsed
+    let isGloballyCollapsed = true; // For the "Collapse/Expand All" button state
 
     // --- DOM ELEMENTS ---
     const editor = document.getElementById('contract-editor');
@@ -159,9 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('themeToggle');
     const aiFillBtn = document.getElementById('aiFillBtn');
 
-    // --- GEMINI API ---
+    // --- GEMINI API (Live for Summarizer & Reviewer) ---
     async function callGeminiApi(prompt, systemInstruction = null) {
-        const API_KEY = ""; // Leave blank
+        const API_KEY = ""; // Leave blank, handled by environment
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
         const payload = { contents: [{ parts: [{ text: prompt }] }] };
         if (systemInstruction) {
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
             if (!text) throw new Error("Invalid API response.");
-            return text;
+            return text.replace(/(\*\*|`)/g, ''); // Clean markdown characters
         } catch (error) {
             console.error("Gemini API Error:", error);
             showToast("AI generation failed.", "error");
@@ -194,11 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clauseEl.className = isSubClause ? 'sub-clause' : 'clause';
         clauseEl.dataset.id = clause.id;
         clauseEl.draggable = true;
-
-        const numberMatch = clause.title.match(/^[\d.]+/);
-        const number = numberMatch ? numberMatch[0] : '';
-        const titleText = numberMatch ? clause.title.substring(numberMatch[0].length).trim() : clause.title;
-
+        
         clauseEl.innerHTML = `
             <div class="clause-header">
                 <i class="fas fa-grip-vertical drag-handle"></i>
@@ -211,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn-icon remove-clause-btn" title="Remove Clause"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-            <div class="clause-content" style="display: ${isCollapsed ? 'none' : 'block'};">
+            <div class="clause-content" style="display: ${clause.isCollapsed ? 'none' : 'block'};">
                 <textarea class="clause-textarea" placeholder="Enter clause content or generate with AI...">${clause.content}</textarea>
                 <div class="clause-feedback hidden"></div>
                 <div class="sub-clauses-container"></div>
@@ -224,13 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return clauseEl;
     };
 
-    // --- DATA MANIPULATION & STATE ---
-    const findClause = (id, data = contractData) => {
+    const findClause = (id, data = contractData, parent = contractData) => {
         for (const clause of data) {
-            if (clause.id === id) return { clause, parent: data };
+            if (clause.id === id) return { clause, parent };
             if (clause.subClauses) {
-                const found = findClause(id, clause.subClauses);
-                if (found) return { ...found, parent: clause.subClauses };
+                const found = findClause(id, clause.subClauses, clause.subClauses);
+                if (found) return found;
             }
         }
         return null;
@@ -239,10 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const renumberClauses = (clauses, prefix = "") => {
         return clauses.map((clause, index) => {
             const newNumber = prefix ? `${prefix}.${index + 1}` : `${index + 1}`;
-            const oldTitleMatch = clause.title.match(/^[\d.]+/);
-            const titleText = oldTitleMatch ? clause.title.substring(oldTitleMatch[0].length).trim() : clause.title;
+            const titleText = clause.title.replace(/^[\d.]+\s*/, '');
             clause.title = `${newNumber} ${titleText}`;
-            if (clause.subClauses && clause.subClauses.length > 0) {
+            if (clause.subClauses?.length > 0) {
                 clause.subClauses = renumberClauses(clause.subClauses, newNumber);
             }
             return clause;
@@ -250,49 +244,36 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- OUTPUT GENERATION & AI FILL ---
-    const generateFinalDocument = async (autoFill = false) => {
-        if (autoFill) {
-            await fillEmptyClausesWithAI();
-        }
-
-        let finalHtml = `<h2>${contractData[0] ? contractData[0].title.replace(/^[\d.]+\s*/, '') : 'Contract'}</h2>`; // Use first clause title as doc title
-
-        const createHtmlForClauses = (clauses) => {
-            let html = '';
-            clauses.forEach(clause => {
-                html += `<div>`;
-                html += `<h3>${clause.title}</h3>`;
-                // Sanitize content before adding to HTML
-                const sanitizedContent = clause.content.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
-                html += `<p>${sanitizedContent || '...'}</p>`;
-                if (clause.subClauses && clause.subClauses.length > 0) {
-                    html += createHtmlForClauses(clause.subClauses);
+    const generateFinalDocument = (clauses = contractData) => {
+        let finalHtml = `<h2>Contract Document</h2>`;
+        const createHtmlForClauses = (clauseList) => {
+            clauseList.forEach(clause => {
+                finalHtml += `<div><h3>${clause.title}</h3><p>${clause.content.replace(/\n/g, '<br>') || '...'}</p></div>`;
+                if (clause.subClauses?.length > 0) {
+                    finalHtml += `<div style="margin-left: 20px;">${createHtmlForClauses(clause.subClauses)}</div>`;
                 }
-                html += `</div>`;
             });
-            return html;
         };
-
-        finalHtml += createHtmlForClauses(contractData);
+        createHtmlForClauses(clauses);
         output.innerHTML = finalHtml;
         summarizeBtn.disabled = false;
         copyBtn.disabled = false;
     };
 
-    const fillEmptyClausesWithAI = async (clauses = contractData) => {
+
+    const fillEmptyClausesWithAI = (clauses = contractData) => {
         for (const clause of clauses) {
             if (!clause.content.trim()) {
                 const title = clause.title.replace(/^[\d.]+\s*/, '');
                 clause.content = getMockAiContent(title);
             }
             if (clause.subClauses?.length > 0) {
-                await fillEmptyClausesWithAI(clause.subClauses);
+                fillEmptyClausesWithAI(clause.subClauses);
             }
         }
     };
 
     const getMockAiContent = (title) => {
-        // Find the best matching mock data
         const key = Object.keys(mockAiVerbiage).find(k => title.toLowerCase().includes(k.toLowerCase()));
         return key ? mockAiVerbiage[key] : "Content for this clause could not be found in mock data.";
     };
@@ -303,60 +284,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const clauseEl = target.closest('.clause, .sub-clause');
         if (!clauseEl) return;
         const id = clauseEl.dataset.id;
-        const { clause } = findClause(id);
+        const result = findClause(id);
+        const clause = result ? result.clause : null;
 
-        if (target.closest('.clause-header')) {
-            // Allow clicking anywhere on header (except buttons) to toggle
-            if (!target.closest('button, input')) {
-                const content = clauseEl.querySelector('.clause-content');
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        if (!clause) return;
+
+        if (target.closest('.clause-header') && !target.closest('button, input, .drag-handle')) {
+            const content = clauseEl.querySelector('.clause-content');
+            clause.isCollapsed = !clause.isCollapsed;
+            content.style.display = clause.isCollapsed ? 'none' : 'block';
+        }
+
+        if (target.closest('.add-sub-clause-btn')) {
+            if (!clause.subClauses) clause.subClauses = [];
+            clause.subClauses.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "New Sub-clause", content: "", isCollapsed: false, subClauses: [] });
+            clause.isCollapsed = false; // BUG FIX: Ensure parent expands
+            renderContract();
+        }
+        
+        if (target.closest('.remove-clause-btn')) {
+             if (confirm('Are you sure you want to remove this clause and all its sub-clauses?')) {
+                const parent = result.parent;
+                const index = parent.findIndex(c => c.id === id);
+                if (index > -1) {
+                    parent.splice(index, 1);
+                    renderContract();
+                }
             }
         }
 
-        if (target.closest('.ai-generate-btn')) { // MOCK DATA
+        if (target.closest('.ai-generate-btn')) {
             const title = clause.title.replace(/^[\d.]+\s*/, '');
-            const mockContent = getMockAiContent(title);
-            clause.content = mockContent;
-            clauseEl.querySelector('.clause-textarea').value = mockContent;
+            clause.content = getMockAiContent(title);
+            clauseEl.querySelector('.clause-textarea').value = clause.content;
             showToast("Mock content added.", "success");
         }
 
-        if (target.closest('.ai-review-btn')) { // LIVE AI
+        if (target.closest('.ai-review-btn')) {
             const button = target.closest('.ai-review-btn');
             const feedbackEl = clauseEl.querySelector('.clause-feedback');
             button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
             button.disabled = true;
-
             const prompt = `Please review the following legal clause for clarity, completeness, and potential ambiguities. Provide brief, actionable feedback. Clause: "${clause.content}"`;
             const feedback = await callGeminiApi(prompt, "You are a helpful legal assistant providing feedback on contract clauses.");
-            
             if (feedback) {
                 feedbackEl.innerHTML = `<strong>AI Feedback:</strong> ${feedback}`;
                 feedbackEl.classList.remove('hidden');
             }
             button.innerHTML = `<i class="fas fa-tasks"></i>`;
             button.disabled = false;
-        }
-
-        if (target.closest('.add-sub-clause-btn')) {
-            const result = findClause(id);
-            if (result && result.clause) {
-                if (!result.clause.subClauses) result.clause.subClauses = [];
-                result.clause.subClauses.push({ id: `clause_${Date.now()}_${Math.random()}`, title: "New Sub-clause", content: "", subClauses: [] });
-                renderContract();
-            }
-        }
-        if (target.closest('.remove-clause-btn')) {
-            if (confirm('Are you sure you want to remove this clause and all its sub-clauses?')) {
-                const result = findClause(id);
-                if (result) {
-                    const index = result.parent.findIndex(c => c.id === id);
-                    if (index > -1) {
-                        result.parent.splice(index, 1);
-                        renderContract();
-                    }
-                }
-            }
         }
     };
 
@@ -468,11 +444,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     collapseAllBtn.addEventListener('click', (e) => {
-        isCollapsed = !isCollapsed;
-        document.querySelectorAll('.clause-content').forEach(el => {
-            el.style.display = isCollapsed ? 'none' : 'block';
-        });
-        e.currentTarget.innerHTML = isCollapsed ? '<i class="fas fa-expand-alt"></i> Expand All' : '<i class="fas fa-compress-alt"></i> Collapse All';
+        isGloballyCollapsed = !isGloballyCollapsed;
+        const toggleRecursively = (clauses) => {
+            clauses.forEach(c => {
+                c.isCollapsed = isGloballyCollapsed;
+                if (c.subClauses) toggleRecursively(c.subClauses);
+            });
+        };
+        toggleRecursively(contractData);
+        renderContract();
+        e.currentTarget.innerHTML = isGloballyCollapsed ? '<i class="fas fa-expand-alt"></i> Expand All' : '<i class="fas fa-compress-alt"></i> Collapse All';
     });
 
     generateBtn.addEventListener('click', generateFinalDocument);
@@ -509,15 +490,17 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.addEventListener('dragover', handleDragAndDrop);
     editor.addEventListener('drop', handleDragAndDrop);
 
-    aiFillBtn.addEventListener('click', async () => {
+    aiFillBtn.addEventListener('click', () => {
         if (confirm("This will fill all empty clauses with AI-generated content. Proceed?")) {
-            await fillEmptyClausesWithAI();
-            renderContract(); // Re-render to show the new content in the editor
+            fillEmptyClausesWithAI();
+            renderContract();
             showToast("Empty clauses filled with AI content.", "success");
         }
     });
-    generateBtn.addEventListener('click', () => generateFinalDocument(true)); // Pass true to auto-fill on generate
-
+    generateBtn.addEventListener('click', () => {
+        generateFinalDocument(contractData);
+        showToast("Document generated!", "success");
+    });
     init();
 
     function init() {
